@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+  <title>移动花卡免费领取</title>
+  <link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css">
+  <style>
+    /*<!--reset.css-->*/
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .fr {
+      float: right;
+    }
+
+    .fl {
+      float: left;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    .clearfix:after {
+      content: ".";
+      display: block;
+      height: 0;
+      clear: both;
+      visibility: hidden
+    }
+
+    .clearfix {
+      display: block
+    }
+
+    html {
+      font-size: 366%;
+    }
+
+    body {
+      line-height: 1.6;
+      font-size: 0.3rem;
+      font-family: -apple-system-font, Helvetica Neue, sans-serif;
+      overflow-x: hidden;
+      overflow-y: scroll;
+      background-color: #000;
+    }
+
+    #app .icon {
+      width: 100%;
+      display: flex;
+    }
+
+    #app .icon img {
+      width: 100%;
+      height: 100%;
+      margin-top: -1px;
+    }
+
+    #app .contian .Msgbox {
+      width: 100%;
+      box-sizing: border-box;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0px 0.3rem;
+      background: url('https://oss.kedang.net/saas/collect/flower/image/flower_1/icon_2.png') no-repeat;
+      background-size: 100% 100%;
+      position: static;
+      bottom: 0px;
+    }
+
+    #app .contian .Msgbox .MsgContain {
+      width: 100%;
+      margin: 0.2rem 0;
+      border-radius: 20px;
+      background: rgb(198, 85, 133);
+      padding: 0.2rem 0.3rem;
+      box-sizing: border-box;
+    }
+
+    #app .contian .Msgbox .MsgContain .msgboxinput {
+      margin-bottom: 8px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .mint-popup-bottom {
+      width: 100%;
+    }
+
+    .okBtn {
+      width: 1rem;
+      height: .5rem;
+      text-align: center;
+      float: right;
+      color: #3065cd;
+
+    }
+
+    .areaBox {
+      width: 100%;
+    }
+
+    .Agreement {
+      font-size: 0.2rem;
+      color: #eeeeee;
+      margin-bottom: 0.14rem;
+    }
+
+    .checkBox {
+      float: left;
+      height: .3rem;
+      width: .3rem;
+      border: 1px solid #ccc;
+      margin-right: .15rem;
+      overflow: hidden;
+    }
+
+    .checkBox img {
+      height: .3rem;
+      width: .3rem;
+
+    }
+
+    .active {
+      background-color: #1989fa;
+    }
+
+    .tipsTextMsg {
+      font-size: 0.14rem;
+      color: #eeeeee;
+      margin-bottom: 0.36rem;
+    }
+
+    #app .contian .Msgbox .MsgContain .btnSubmit {
+      width: 100%;
+      height: 0.78rem;
+      color: #fff;
+      text-align: center;
+      line-height: 0.78rem;
+      border-radius: 0.49rem;
+      font-size: 0.36rem;
+      background: linear-gradient(#d4b877, #bc904b, #d4b877);
+    }
+
+    .Btn {
+      width: 100%;
+      height: 1rem;
+      padding: 0 0.25rem;
+      box-sizing: border-box;
+      margin: 0.4rem 0;
+    }
+
+
+  </style>
+  <!-- 引入样式 -->
+
+  <!--引入vue-->
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <!-- 引入组件库 -->
+  <script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+  <!--引入axios 请求 http 插件-->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <div class="icon">
+    <img src="./image/a.png" alt="" class="icon_1">
+  </div>
+  <div class="icon contian">
+    <div class="Msgbox">
+      <div class="MsgContain" style="">
+        <div class="msgboxinput">
+          <mt-field label="收件人姓名" placeholder="请输入收件人姓名(已加密)" v-model="username" type="text"></mt-field>
+        </div>
+        <div class="msgboxinput">
+          <mt-field label="联系号码" placeholder="请输入收件人电话(已加密)" v-model="userphone" type="tel"></mt-field>
+        </div>
+        <div class="msgboxinput" @click="changePopup">
+          <mt-field label="省/市/区" placeholder="" v-model="adress"></mt-field>
+        </div>
+        <div class="msgboxinput">
+          <mt-field label="详细地址" placeholder="如街道,道路,小区,门牌号等" v-model="detail"></mt-field>
+        </div>
+
+        <div class="msgboxinput" v-if="idCardShow">
+          <mt-field label="办理身份证号" placeholder="未满16周岁请勿下单" v-model="idCard" type="number"></mt-field>
+        </div>
+
+        <div class="Agreement" style="padding: 0px;">
+          <div role="checkbox" @click="checkboxChange">
+            <div class="checkBox" v-if="!rember"></div>
+            <div class="checkBox active" v-else>
+              <img src="./image/dui.png" alt="">
+            </div>
+            <span class="van-checkbox__label">
+              <span class="textAgreement" style="color: #323233">我已阅读并同意</span>
+              <span class="Worder" style="color: #3065cd">《入网协议》</span>
+            </span>
+          </div>
+          <div class="tipsTextMsg">
+            *请填写真实身份信息,未满16周岁/联系电话/收货地址错误无法发货*
+          </div>
+          <div class="btnSubmit Btn" @click="handleClick()"
+               style="margin-bottom: 0px; color: rgb(198, 85, 133); background: rgb(255, 255, 255);">
+            立即领卡
+          </div>
+
+        </div>
+
+
+      </div
+      >
+    </div>
+  </div>
+  <div class="icon"><img src="./image/b.png" alt="" class="icon_3"></div>
+  <div class="icon"><img src="./image/c.png" alt="" class="icon_3"></div>
+  <div class="icon"><img src="./image/d.png" alt="" class="icon_3"></div>
+  <mt-popup
+    pop-transition="popup-fade"
+    v-model="popupVisible"
+    position="bottom">
+    <div class="okBtn" @click="changePopupHidden">完成</div>
+    <mt-picker :slots="myAddressSlots" value-key="name" @change="addressChange"></mt-picker>
+  </mt-popup>
+</div>
+</body>
+<script src="./js/jquery-1.11.1.min.js"></script>
+<script src="./data/threeLevelAddress.js"></script>
+<script>
+  new Vue({
+    el: '#app',
+    data() {
+      //值预置
+      return {
+        username: "",//收件人姓名
+        userphone: "",//收件人电话
+        detail: "",//详细地址
+        province: "",//省
+        city: "",//城市
+        area: "",//区域
+        adress: "", //页面显示的地理数据
+        rember: false,//我同意
+        popupVisible: false,//地址选择弹窗是否弹出
+        myAddressSlots: [],//弹出层显示的地理数据   // picker组件插槽
+        idCardShow:false,//是否显示身份证
+        idCard:"",//是否显示身份证
+        addrlist: {
+          area: {},
+          city: {},
+          province: [],
+        },//地理数据
+      }
+    },
+    //函数
+    methods: {
+      //处理城市、省份、区域
+      addressChange(picker, values) {
+        let that = this
+
+        let provicename = values[0] && values[0]['name'] ? values[0]['name'] : '';
+        let cityname = values[1] && values[1]['name'] ? values[1]['name'] : '';
+        let areaname = values[2] && values[2]['name'] ? values[2]['name'] : '';
+        that.province = provicename
+
+        that.city = cityname
+        that.area = areaname
+        that.adress = provicename + " " + cityname + " " + areaname
+
+        // 给市、县赋值
+        if (values[0] && values[0]["code"]) {
+          picker.setSlotValues(1, this.getCityArr(values[0]["code"]));
+        }
+        if (values[1] && values[1]["code"]) {
+          picker.setSlotValues(2, this.getCountyArr(values[1]["code"]));
+        }
+
+
+      },
+      getProvinceArr() {
+        let that = this
+        if (that.addrlist.province != []) {
+          let gp = that.addrlist.province;
+          return gp;
+        }
+
+      },
+      getCityArr(code) {
+        let that = this
+        if (that.addrlist.city != {}) {
+          let p = that.addrlist.city[code];
+          let cityname = p.map(item => item.name);
+          // console.log(p);
+          return p;
+        }
+
+
+      },
+      getCountyArr(code) {
+        let that = this
+        if (that.addrlist.area != {}) {
+          let s = that.addrlist.area[code];
+          if (s) {
+            let countyname = s.map(item => item.name);
+          }
+          return s;
+        }
+      },
+
+      //  显示底部弹出层、预加载一定的地区城市数据
+      changePopup() {
+        let that = this
+        that.province = "广东省"
+        that.city = "汕头市"
+        that.area = "楠澳县"
+        that.adress = that.province + " " + that.city + " " + that.area
+        that.popupVisible = !that.popupVisible
+      },
+      //  隐藏底部弹出层
+      changePopupHidden(){
+        let that = this
+        that.popupVisible = !that.popupVisible
+      },
+
+      //我同意点击函数
+      checkboxChange() {
+        this.rember = !this.rember
+      },
+
+      //立即开卡点击函数
+      handleClick() {
+
+      }
+
+
+    },
+    //监听
+    watch: {
+      username(val, oldVal) {
+        if (this.userphone !="" &&val!=''){
+          this.idCardShow=true
+        }else {
+          this.idCardShow=false
+        }
+      },
+      userphone(val, oldVal) {
+        if (this.username !="" &&val!=''){
+          this.idCardShow=true
+        }else {
+          this.idCardShow=false
+        }
+      },
+    },
+    //页面渲染完成的钩子
+    mounted() {
+      let that = this
+      that.myAddressSlots = [
+        // 省
+        {
+          flex: 1,
+          values: this.getProvinceArr(), // ['广东'], // 省份数组
+          className: 'slot1',
+          textAlign: 'left'
+        },
+        // 分隔符
+        {
+          divider: true,
+          content: '-',
+          className: 'slot2'
+        },
+        // 市
+        {
+          flex: 1,
+          values: this.getCityArr("440000"), // []
+          className: 'slot3',
+          textAlign: 'left'
+        },
+        {
+          divider: true,
+          content: '-',
+          className: 'slot4'
+        },
+        // 县
+        {
+          flex: 1,
+          values: this.getCountyArr("440500"), // []
+          className: 'slot5',
+          textAlign: 'left'
+        }
+      ]
+
+
+
+      //  弹窗示例：
+      //   message	文本内容
+      //   position	Toast 的位置	        'top'
+      //                                'bottom'
+      //                                'middle'
+      //   duration	持续时间（毫秒），若为 -1 则不会自动关闭
+      //   className	Toast 的类名。可以为其添加样式
+      //   iconClass	icon 图标的类名	String
+      let instance = this.$toast({
+        message: '用这个弹窗代替alert  ！！！ 提示',
+        position: 'bottom',
+        duration: 5000,
+        iconClass: 'icon icon-success'
+      })
+      setTimeout(() => {
+        instance.close();
+      }, 2000);
+      //  -----
+
+
+    },
+    //页面未渲染的钩子
+    created() {
+      let that = this
+      //拿到城市数据json
+      var json = JSON.parse(JSON.stringify(threeLevelAddress))
+      that.addrlist.province = json.province
+      that.addrlist.city = json.city
+      that.addrlist.area = json.area
+
+
+
+    },
+
+  })
+</script>
+</html>
